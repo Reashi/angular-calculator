@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Button } from '../button/button';
 import { History } from '../../services/history';
 import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
+import { Calculator } from '../../services/calculator';
 
 @Component({
   selector: 'app-calculator',
@@ -12,13 +13,11 @@ import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
   styleUrl: './calculator.scss',
   providers: [History]
 })
-export class Calculator {
+export class CalculatorComponent {
   currentInput: string = '';
   previousInput: string = '';
   operator: string='';
   historyList: string[] = [];
-
-  constructor(private history: History) {}
 
   buttons: string[] = [
     '7', '8', '9', '/',
@@ -27,6 +26,11 @@ export class Calculator {
     'C', '0', '←', '+',
     '='
   ];
+
+  constructor(
+    private history: History,
+    private calculator: Calculator
+  ) {}
 
   handleButtonClick(value: string) {
     if(!isNaN(+value)||value=== '.') {
@@ -50,33 +54,23 @@ export class Calculator {
     calculate(){
       const num1 = parseFloat(this.previousInput);
       const num2 = parseFloat(this.currentInput);
-      let result: number = 0;
+      
+      const result = this.calculator.calculate(num1, num2, this.operator);
 
-      switch (this.operator){
-        case '+':
-          result = num1 + num2;
-          break;
-        case '-':
-          result = num1 - num2;
-          break;
-        case '*':
-          result = num1 * num2;
-          break;
-        case '/':
-          result = num2 !== 0 ? num1 / num2 : NaN;
-          break;
-        default:
-          return;
+      if (result !==null) {
+        const expression = `${this.previousInput} ${this.operator} ${this.currentInput} = ${result}`;
+        this.history.add(expression);
+        this.historyList = this.history.get();
+
+        this.currentInput = result.toString();
+        this.previousInput = '';
+        this.operator = '';
       }
 
-      const expression = `${this.previousInput} ${this.operator} ${this.currentInput} = ${result}`;
-      this.history.add(expression);
-      this.historyList = this.history.get();
-
-      this.currentInput = result.toString();
-      this.previousInput = '';
-      this.operator = '';
+      
     }
   }
 
+
+export { Calculator };
 
