@@ -1,6 +1,6 @@
 <div class="display">
   <div class="previous">{{ previousInput }} {{ operator }}</div>
-  <div class="current">{{ currentInput || '0' }}</div>
+  <div class="current">{{ currentInput || '0' |doubleDigit }}</div>
 </div>
 
 <div class="calculator-grid">
@@ -9,4 +9,11 @@
     [label]="btn"
     (btnClick)="handleButtonClick($event)">
   </app-button>
+</div>
+
+<div class="history">
+  <h3>İşlem Geçmişi</h3>
+  <ul>
+    <li *ngFor="let entry of historyList">{{ entry}}</li>
+  </ul>
 </div>

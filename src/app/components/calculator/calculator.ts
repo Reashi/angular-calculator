@@ -1,18 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button } from '../button/button'; // kendi button component'in
+import { Button } from '../button/button';
+import { History } from '../../services/history';
+import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
 
 @Component({
   selector: 'app-calculator',
   standalone: true,
-  imports: [CommonModule, Button],
+  imports: [CommonModule, Button, DoubleDigitPipe],
   templateUrl: './calculator.html',
-  styleUrl: './calculator.scss'
+  styleUrl: './calculator.scss',
+  providers: [History]
 })
 export class Calculator {
   currentInput: string = '';
   previousInput: string = '';
   operator: string='';
+  historyList: string[] = [];
+
+  constructor(private history: History) {}
 
   buttons: string[] = [
     '7', '8', '9', '/',
@@ -62,6 +68,11 @@ export class Calculator {
         default:
           return;
       }
+
+      const expression = `${this.previousInput} ${this.operator} ${this.currentInput} = ${result}`;
+      this.history.add(expression);
+      this.historyList = this.history.get();
+
       this.currentInput = result.toString();
       this.previousInput = '';
       this.operator = '';

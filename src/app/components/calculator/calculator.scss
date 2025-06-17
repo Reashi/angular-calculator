@@ -18,3 +18,11 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
+
+.history {
+  margin-top: 1rem;
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: monospace;
+}
