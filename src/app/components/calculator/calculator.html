@@ -1,0 +1,12 @@
+<div class="display">
+  <div class="previous">{{ previousInput }} {{ operator }}</div>
+  <div class="current">{{ currentInput || '0' }}</div>
+</div>
+
+<div class="calculator-grid">
+  <app-button
+    *ngFor="let btn of buttons"
+    [label]="btn"
+    (btnClick)="handleButtonClick($event)">
+  </app-button>
+</div>

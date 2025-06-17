@@ -1,0 +1,20 @@
+.display {
+  background-color: #222;
+  color: white;
+  padding: 1rem;
+  font-size: 2rem;
+  text-align: right;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.previous {
+  opacity: 0.6;
+  font-size: 1rem;
+}
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
