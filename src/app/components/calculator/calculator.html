@@ -1,19 +1,145 @@
-<div class="display">
-  <div class="previous">{{ previousInput }} {{ operator }}</div>
-  <div class="current">{{ currentInput || '0' |doubleDigit }}</div>
-</div>
+<div class="calculator-container">
+  <div class="display">
+    <div class="previous">{{ previousInput }} {{ operator }}</div>
+    <div class="current">{{ currentInput | doubleDigit }}</div>
+  </div>
 
-<div class="calculator-grid">
-  <app-button
-    *ngFor="let btn of buttons"
-    [label]="btn"
-    (btnClick)="handleButtonClick($event)">
-  </app-button>
+  <div class="calculator-grid">
+    <!-- İlk satır: C, ←, /, + -->
+    <app-button
+      [label]="'C'"
+      [buttonType]="'clear'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'←'"
+      [buttonType]="'function'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'/'"
+      [buttonType]="'operator'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'+'"
+      [buttonType]="'operator'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    
+    <!-- İkinci satır: 7, 8, 9, * -->
+    <app-button
+      [label]="'7'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'8'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'9'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'*'"
+      [buttonType]="'operator'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+
+    <!-- Üçüncü satır: 4, 5, 6, - -->
+    <app-button
+      [label]="'4'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'5'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'6'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'-'"
+      [buttonType]="'operator'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+
+    <!-- Dördüncü satır: 1, 2, 3 -->
+    <app-button
+      [label]="'1'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'2'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    <app-button
+      [label]="'3'"
+      [buttonType]="'number'"
+      [span]="1"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    
+    <!-- Beşinci satır: 0 (3 kolon) -->
+    <app-button
+      [label]="'0'"
+      [buttonType]="'number'"
+      [span]="3"
+      class="btn-zero"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+    
+    
+    <!-- Eşittir tuşu - 2 satır boyunca (4. ve 5. satırda, 4. sütunda) -->
+    <app-button
+      [label]="'='"
+      [buttonType]="'equals'"
+      [span]="1"
+      class="equals-button"
+      (btnClick)="handleButtonClick($event)">
+    </app-button>
+  </div>
 </div>
 
 <div class="history">
   <h3>İşlem Geçmişi</h3>
   <ul>
-    <li *ngFor="let entry of historyList">{{ entry}}</li>
+    <li *ngFor="let entry of historyList">{{ entry }}</li>
   </ul>
 </div>

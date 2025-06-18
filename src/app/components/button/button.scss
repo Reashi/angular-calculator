@@ -1,15 +1,110 @@
 button {
-  font-size: 1.5rem;
-  padding: 1rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 1.2rem;
   width: 100%;
   height: 100%;
+  min-height: 60px;
   border: none;
-  background-color: #e0e0e0;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:active {
+    transform: scale(0.95);
+  }
 
-  &:hover {
-    background-color: #d0d0d0;
+  // Number buttons (beyaz/açık gri)
+  &.btn-number {
+    background: linear-gradient(145deg, #ffffff, #f0f4f8);
+    color: #2d3748;
+    
+    &:hover {
+      background: linear-gradient(145deg, #f7fafc, #e2e8f0);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  // Operator buttons (turkuaz)
+  &.btn-operator {
+    background: linear-gradient(145deg, #38b2ac, #319795);
+    color: white;
+    font-weight: 600;
+    
+    &:hover {
+      background: linear-gradient(145deg, #2c7a7b, #285e61);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 178, 172, 0.3);
+    }
+  }
+
+  // Function buttons (mor/lavanta)
+  &.btn-function {
+    background: linear-gradient(145deg, #b794f6, #9f7aea);
+    color: white;
+    font-weight: 600;
+    
+    &:hover {
+      background: linear-gradient(145deg, #9182ce, #805ad5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(159, 122, 234, 0.3);
+    }
+  }
+
+  // Clear button (açık mavi)
+  &.btn-clear {
+    background: linear-gradient(145deg, #63b3ed, #4299e1);
+    color: white;
+    font-weight: 600;
+    
+    &:hover {
+      background: linear-gradient(145deg, #3182ce, #2b77cb);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    }
+  }
+
+  // Equals button (yeşil ve daha büyük)
+  &.btn-equals {
+    background: linear-gradient(145deg, #68d391, #48bb78);
+    color: white;
+    font-weight: 700;
+    font-size: 2rem;
+    min-height: 100px;
+    
+    &:hover {
+      background: linear-gradient(145deg, #38a169, #2f855a);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
+    }
+  }
+  &.btn-zero{
+    background: linear-gradient(145deg, #ffffff, #f0f4f8);
+    color: #2d3748;
+    font-size: 700;
+    font-size: 1.6rem;
+    
+    &:hover {
+      background: linear-gradient(145deg, #f7fafc, #e2e8f0);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 480px) {
+  button {
+    font-size: 1.2rem;
+    padding: 1rem;
+    min-height: 50px;
+    border-radius: 15px;
+    
+    &.btn-equals {
+      font-size: 1.6rem;
+      min-height: 80px;
+    }
   }
 }
