@@ -75,4 +75,4 @@ export class Calculator {
       default: return NaN;
     }
   }
-}
+} 

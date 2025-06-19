@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button } from '../button/button';
-import { History } from '../../services/history';
+import { History } from '../../services/history.service';
 import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
-import { Calculator } from '../../services/calculator';
+import { Calculator } from '../../services/calculator.service';
 
 @Component({
   selector: 'app-calculator',

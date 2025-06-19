@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Calculator } from './calculator';
+import { History } from './history.service';
 
-describe('Calculator', () => {
-  let service: Calculator;
+describe('History', () => {
+  let service: History;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Calculator);
+    service = TestBed.inject(History);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-});
+}); 
