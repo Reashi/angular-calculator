@@ -1,0 +1,8 @@
+{
+  "/api/*": {
+    "target": "http://s1.divlop.com:5001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

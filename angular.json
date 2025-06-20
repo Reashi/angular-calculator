@@ -64,7 +64,8 @@
               "buildTarget": "calculator:build:production"
             },
             "development": {
-              "buildTarget": "calculator:build:development"
+              "buildTarget": "calculator:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
