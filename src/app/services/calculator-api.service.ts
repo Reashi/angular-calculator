@@ -4,8 +4,8 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface CalculationRequest {
-  a: number;
-  b?: number; // squareRoot için b gerekli değil
+  parameter1: number;
+  parameter2?: number; // squareRoot için parameter2 gerekli değil
 }
 
 export interface CalculationResponse {
@@ -25,7 +25,7 @@ export interface HistoryItem {
   providedIn: 'root'
 })
 export class CalculatorApiService {
-  private readonly baseUrl = '/api'; // Proxy üzerinden istek atmak için
+  private readonly baseUrl = '/api';
   private readonly headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${environment.apiToken}`
@@ -35,16 +35,18 @@ export class CalculatorApiService {
 
   // Calculator operations
   add(a: number, b: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a, b };
+    const request: CalculationRequest = { parameter1: a, parameter2: b };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/add`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      catchError(this.handleError)
     );
   }
 
   subtract(a: number, b: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a, b };
+    const request: CalculationRequest = { parameter1: a, parameter2: b };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/subtract`, 
       request, 
@@ -53,7 +55,7 @@ export class CalculatorApiService {
   }
 
   multiply(a: number, b: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a, b };
+    const request: CalculationRequest = { parameter1: a, parameter2: b };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/multiply`, 
       request, 
@@ -62,7 +64,7 @@ export class CalculatorApiService {
   }
 
   divide(a: number, b: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a, b };
+    const request: CalculationRequest = { parameter1: a, parameter2: b };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/divide`, 
       request, 
@@ -71,7 +73,7 @@ export class CalculatorApiService {
   }
 
   power(a: number, b: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a, b };
+    const request: CalculationRequest = { parameter1: a, parameter2: b };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/power`, 
       request, 
@@ -80,7 +82,7 @@ export class CalculatorApiService {
   }
 
   squareRoot(a: number): Observable<CalculationResponse> {
-    const request: CalculationRequest = { a };
+    const request: CalculationRequest = { parameter1: a };
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/squareRoot`, 
       request, 
@@ -102,27 +104,6 @@ export class CalculatorApiService {
       { headers: this.headers }
     );
   }
-}
-
-@Injectable({
-  providedIn: 'root'
-})
-export class CalculatorService {
-  // Proxy kullanıyorsanız base URL'yi değiştirin
-  private baseUrl = '/api/calculator'; // http://s1.divlop.com:5001 yerine
-
-  constructor(private http: HttpClient) { }
-
-  add(numbers: number[]): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.post(`${this.baseUrl}/add`, { numbers }, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
 
   private handleError(error: HttpErrorResponse) {
     console.error('API çağrısında hata:', error);
@@ -135,4 +116,6 @@ export class CalculatorService {
     
     return throwError(() => error);
   }
-} 
+}
+
+ 
