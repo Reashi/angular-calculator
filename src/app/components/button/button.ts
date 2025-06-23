@@ -10,10 +10,12 @@ export class Button {
   @Input() label: string = '';
   @Input() buttonType: string = 'number';
   @Input() span: number = 1;
+  @Input() disabled: boolean = false;
   @Output() btnClick = new EventEmitter<string>;
 
   handleClick() {
-    this.btnClick.emit(this.label);
+    if (!this.disabled) {
+      this.btnClick.emit(this.label);
+    }
   }
-
 }

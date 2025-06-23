@@ -1,6 +1,8 @@
 <button 
   (click)="handleClick()" 
   [class]="'btn-' + buttonType"
-  [style.grid-column]="span > 1 ? 'span ' + span : 'auto'">
+  [style.grid-column]="span > 1 ? 'span ' + span : 'auto'"
+  [disabled]="disabled"
+  [class.disabled]="disabled">
   {{ label }}
 </button>

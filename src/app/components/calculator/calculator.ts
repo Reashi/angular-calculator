@@ -1,205 +1,118 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { Button } from '../button/button';
-import { History } from '../../services/history.service';
 import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
-import { Calculator } from '../../services/calculator.service';
-import { CalculatorApiService } from '../../services/calculator-api.service';
-import { 
-  HistoryEntry, 
-  OperationType, 
-  OperationSymbols 
-} from '../../models/calculation.model';
+import { HistoryEntry } from '../../models/calculation.model';
+import { AppState } from '../../store/calculator.state';
+import * as CalculatorActions from '../../store/calculator.actions';
+import * as CalculatorSelectors from '../../store/calculator.selectors';
 
 @Component({
   selector: 'app-calculator',
   standalone: true,
   imports: [CommonModule, Button, DoubleDigitPipe],
   templateUrl: './calculator.html',
-  styleUrl: './calculator.scss',
-  providers: [History]
+  styleUrl: './calculator.scss'
 })
 export class CalculatorComponent implements OnInit {
-  historyList: HistoryEntry[] = [];
+  
+  // Observable state from store
+  currentInput$: Observable<string>;
+  previousInput$: Observable<string>;
+  operator$: Observable<string>;
+  loading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  historyList$: Observable<HistoryEntry[]>;
+  historyLoading$: Observable<boolean>;
 
-  constructor(
-    private history: History,
-    private calculator: Calculator,
-    private calculatorApi: CalculatorApiService
-  ) {}
-
-  ngOnInit() {
-    // Sayfa yüklendiğinde API'den history'yi çek
-    this.loadHistory();
+  constructor(private store: Store<AppState>) {
+    // Store'dan observables'ları al
+    this.currentInput$ = this.store.select(CalculatorSelectors.selectCurrentInput);
+    this.previousInput$ = this.store.select(CalculatorSelectors.selectPreviousInput);
+    this.operator$ = this.store.select(CalculatorSelectors.selectOperator);
+    this.loading$ = this.store.select(CalculatorSelectors.selectCalculatorLoading);
+    this.error$ = this.store.select(CalculatorSelectors.selectCalculatorError);
+    this.historyList$ = this.store.select(CalculatorSelectors.selectFormattedHistory);
+    this.historyLoading$ = this.store.select(CalculatorSelectors.selectHistoryLoading);
   }
 
-  // Getter'lar view için
+  ngOnInit() {
+    // Sayfa yüklendiğinde history'yi yükle
+    this.store.dispatch(CalculatorActions.loadHistory());
+  }
+
+  // Getter'lar view için (backward compatibility)
   get currentInput(): string {
-    return this.calculator.getCurrentInput();
+    let current = '';
+    this.currentInput$.subscribe(value => current = value).unsubscribe();
+    return current;
   }
 
   get previousInput(): string {
-    return this.calculator.getPreviousInput();
+    let previous = '';
+    this.previousInput$.subscribe(value => previous = value).unsubscribe();
+    return previous;
   }
 
   get operator(): string {
-    return this.calculator.getOperator();
+    let op = '';
+    this.operator$.subscribe(value => op = value).unsubscribe();
+    return op;
+  }
+
+  get historyList(): HistoryEntry[] {
+    let history: HistoryEntry[] = [];
+    this.historyList$.subscribe(value => history = value).unsubscribe();
+    return history;
   }
 
   handleButtonClick(value: string) {
     // Sayı veya nokta
     if (!isNaN(+value) || value === '.') {
-      this.calculator.addDigit(value);
+      this.store.dispatch(CalculatorActions.addDigit({ digit: value }));
     }
     // Clear butonu
     else if (value === 'C') {
-      this.calculator.clear();
+      this.store.dispatch(CalculatorActions.clearCalculator());
     }
     // Backspace butonu
     else if (value === '←') {
-      this.calculator.backspace();
+      this.store.dispatch(CalculatorActions.backspace());
     }
     // Eşittir butonu
     else if (value === '=') {
-      const prevInput = this.calculator.getPreviousInput();
-      const currInput = this.calculator.getCurrentInput();
-      const op = this.calculator.getOperator();
+      const prevInput = this.previousInput;
+      const currInput = this.currentInput;
+      const op = this.operator;
       
       if (prevInput && currInput && op) {
         const a = parseFloat(prevInput);
         const b = parseFloat(currInput);
-        const expression = `${prevInput} ${op} ${currInput} = `;
         
-        // API'ye göre operasyon seçimi
-        this.calculateWithApi(a, b, op, expression);
+        // NgRx action dispatch et
+        this.store.dispatch(CalculatorActions.performCalculation({ 
+          a, b, operator: op 
+        }));
       }
     }
     // Karekök işlemi
     else if (value === '√') {
-      const currInput = this.calculator.getCurrentInput();
+      const currInput = this.currentInput;
       if (currInput && currInput !== '0') {
         const a = parseFloat(currInput);
-        this.calculatorApi.squareRoot(a).subscribe({
-          next: (response) => {
-            this.calculator.clear();
-            this.calculator.addDigit(response.result.toString());
-            // API'den history'yi yeniden yükle
-            this.loadHistory();
-          },
-          error: (error) => {
-            console.error('Karekök hesaplanırken hata:', error);
-          }
-        });
+        this.store.dispatch(CalculatorActions.performSquareRoot({ value: a }));
       }
     }
     // Operatör butonları
     else {
-      this.calculator.setOperator(value);
+      this.store.dispatch(CalculatorActions.setOperator({ operator: value }));
     }
-  }
-
-  private calculateWithApi(a: number, b: number, operator: string, expression: string) {
-    let apiCall;
-    
-    switch (operator) {
-      case '+':
-        apiCall = this.calculatorApi.add(a, b);
-        break;
-      case '-':
-        apiCall = this.calculatorApi.subtract(a, b);
-        break;
-      case '*':
-        apiCall = this.calculatorApi.multiply(a, b);
-        break;
-      case '/':
-        apiCall = this.calculatorApi.divide(a, b);
-        break;
-      case '^':
-        apiCall = this.calculatorApi.power(a, b);
-        break;
-      default:
-        // Fallback to local calculation
-        this.calculator.calculateResult();
-        const result = this.calculator.getCurrentInput();
-        // API'den history'yi yeniden yükle (local ekleme yapmıyoruz)
-        this.loadHistory();
-        return;
-    }
-
-    // API çağrısını yap
-    apiCall.subscribe({
-      next: (response) => {
-        // Calculator state'ini güncelle
-        this.calculator.clear();
-        this.calculator.addDigit(response.result.toString());
-        
-        // API'den history'yi yeniden yükle
-        this.loadHistory();
-      },
-      error: (error) => {
-        console.error('API çağrısında hata:', error);
-        // Hata durumunda lokal hesaplama yap
-        this.calculator.calculateResult();
-        const result = this.calculator.getCurrentInput();
-        // API'den history'yi yeniden yükle
-        this.loadHistory();
-      }
-    });
-  }
-
-  // History API metodları
-  loadHistory() {
-    this.calculatorApi.getHistory().subscribe({
-      next: (history) => {
-        // API'den gelen history'yi local history'ye dönüştür
-        this.historyList = history.map(item => {
-          let expression = '';
-          
-          // Operation type'ı enum'a dönüştür ve sembol al
-          const operationType = item.operation as OperationType;
-          
-          if (operationType === OperationType.SQUARE_ROOT) {
-            expression = `${OperationSymbols[OperationType.SQUARE_ROOT]}${item.parameter1} = ${item.result}`;
-          } else {
-            const symbol = OperationSymbols[operationType] || '?';
-            expression = `${item.parameter1} ${symbol} ${item.parameter2} = ${item.result}`;
-          }
-          
-          return {
-            expression: expression,
-            timestamp: new Date(item.date).toLocaleTimeString('tr-TR', { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit' 
-            })
-          };
-        });
-      },
-      error: (error) => {
-        console.error('History yüklenirken hata:', error);
-      }
-    });
-  }
-
-  clearApiHistory() {
-    this.calculatorApi.clearHistory().subscribe({
-      next: () => {
-        this.historyList = [];
-        console.log('API history temizlendi');
-        // API'den güncel history'yi yeniden yükle
-        this.loadHistory();
-      },
-      error: (error) => {
-        console.error('History temizlenirken hata:', error);
-      }
-    });
   }
 
   clearHistory() {
-    // Sadece API history'yi temizle
-    this.clearApiHistory();
+    this.store.dispatch(CalculatorActions.clearHistory());
   }
 }
-
-export { Calculator };
 

@@ -1,7 +1,9 @@
 <div class="calculator-container">
   <div class="display">
-    <div class="previous">{{ previousInput }} {{ operator }}</div>
-    <div class="current">{{ currentInput | doubleDigit }}</div>
+    <div class="previous">{{ (previousInput$ | async) }} {{ (operator$ | async) }}</div>
+    <div class="current">{{ ((currentInput$ | async) ?? '0') | doubleDigit }}</div>
+    <div *ngIf="(loading$ | async)" class="loading">Hesaplanıyor...</div>
+    <div *ngIf="(error$ | async) as error" class="error">{{ error }}</div>
   </div>
 
   <div class="calculator-grid">
@@ -10,6 +12,7 @@
       [label]="'C'"
       [buttonType]="'clear'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -17,6 +20,7 @@
       [label]="'←'"
       [buttonType]="'function'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -24,6 +28,7 @@
       [label]="'/'"
       [buttonType]="'operator'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -31,6 +36,7 @@
       [label]="'+'"
       [buttonType]="'operator'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -40,6 +46,7 @@
       [label]="'7'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -47,6 +54,7 @@
       [label]="'8'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -54,6 +62,7 @@
       [label]="'9'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -61,6 +70,7 @@
       [label]="'*'"
       [buttonType]="'operator'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
 
@@ -69,6 +79,7 @@
       [label]="'4'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -76,6 +87,7 @@
       [label]="'5'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -83,6 +95,7 @@
       [label]="'6'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -90,6 +103,7 @@
       [label]="'-'"
       [buttonType]="'operator'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
 
@@ -98,6 +112,7 @@
       [label]="'1'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -105,6 +120,7 @@
       [label]="'2'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
@@ -112,26 +128,29 @@
       [label]="'3'"
       [buttonType]="'number'"
       [span]="1"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
     
-    <!-- Beşinci satır: 0 (3 kolon) -->
+    <!-- Beşinci satır: 0, ., ^, = -->
     <app-button
       [label]="'0'"
       [buttonType]="'number'"
-      [span]="3"
+      [span]="1"
       class="btn-zero"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
     
     
-    <!-- Eşittir tuşu - 2 satır boyunca (4. ve 5. satırda, 4. sütunda) -->
+    <!-- Eşittir tuşu -->
     <app-button
       [label]="'='"
       [buttonType]="'equals'"
       [span]="1"
       class="equals-button"
+      [disabled]="(loading$ | async) ?? false"
       (btnClick)="handleButtonClick($event)">
     </app-button>
   </div>
@@ -140,12 +159,17 @@
 <div class="history">
   <div class="history-header">
     <h3>İşlem Geçmişi</h3>
-    <button class="clear-history-btn" (click)="clearHistory()" *ngIf="historyList.length > 0">
+    <div *ngIf="(historyLoading$ | async)" class="loading">Yükleniyor...</div>
+    <button 
+      class="clear-history-btn" 
+      (click)="clearHistory()" 
+      *ngIf="((historyList$ | async)?.length ?? 0) > 0"
+      [disabled]="(historyLoading$ | async) ?? false">
       🗑️ Geçmişi Temizle
     </button>
   </div>
   <ul>
-    <li *ngFor="let entry of historyList" class="history-entry">
+    <li *ngFor="let entry of (historyList$ | async)" class="history-entry">
       <span class="expression">{{ entry.expression }}</span>
       <span class="timestamp">{{ entry.timestamp }}</span>
     </li>

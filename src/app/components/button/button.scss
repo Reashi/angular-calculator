@@ -15,6 +15,22 @@ button {
     transform: scale(0.95);
   }
 
+  // Disabled state
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    &:active {
+      transform: none !important;
+    }
+  }
+
   // Number buttons (beyaz/açık gri)
   &.btn-number {
     background: linear-gradient(145deg, #ffffff, #f0f4f8);
