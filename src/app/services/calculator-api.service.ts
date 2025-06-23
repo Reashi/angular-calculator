@@ -1,25 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface CalculationRequest {
-  parameter1: number;
-  parameter2?: number; // squareRoot için parameter2 gerekli değil
-}
-
-export interface CalculationResponse {
-  result: number;
-  operation: string;
-  timestamp: string;
-}
-
-export interface HistoryItem {
-  id: string;
-  operation: string;
-  result: number;
-  timestamp: string;
-}
+import { CalculationRequest, CalculationResponse, HistoryItem } from '../models/calculation.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,11 +19,13 @@ export class CalculatorApiService {
   // Calculator operations
   add(a: number, b: number): Observable<CalculationResponse> {
     const request: CalculationRequest = { parameter1: a, parameter2: b };
+    console.log('API İsteği gönderiliyor:', request);
     return this.http.post<CalculationResponse>(
       `${this.baseUrl}/calculator/add`, 
       request, 
       { headers: this.headers }
     ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
       catchError(this.handleError)
     );
   }
@@ -51,6 +36,9 @@ export class CalculatorApiService {
       `${this.baseUrl}/calculator/subtract`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
@@ -60,6 +48,9 @@ export class CalculatorApiService {
       `${this.baseUrl}/calculator/multiply`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
@@ -69,6 +60,9 @@ export class CalculatorApiService {
       `${this.baseUrl}/calculator/divide`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
@@ -78,6 +72,9 @@ export class CalculatorApiService {
       `${this.baseUrl}/calculator/power`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
@@ -87,21 +84,32 @@ export class CalculatorApiService {
       `${this.baseUrl}/calculator/squareRoot`, 
       request, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
   // History operations
   getHistory(): Observable<HistoryItem[]> {
+    console.log('API İsteği gönderiliyor: getHistory');
     return this.http.get<HistoryItem[]>(
       `${this.baseUrl}/history/getHistory`, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 
   clearHistory(): Observable<any> {
+    console.log('API İsteği gönderiliyor: clearHistory');
     return this.http.delete(
       `${this.baseUrl}/history/clearHistory`, 
       { headers: this.headers }
+    ).pipe(
+      tap(response => console.log('API Yanıtı:', response)),
+      catchError(this.handleError)
     );
   }
 

@@ -138,8 +138,16 @@
 </div>
 
 <div class="history">
-  <h3>İşlem Geçmişi</h3>
+  <div class="history-header">
+    <h3>İşlem Geçmişi</h3>
+    <button class="clear-history-btn" (click)="clearHistory()" *ngIf="historyList.length > 0">
+      🗑️ Geçmişi Temizle
+    </button>
+  </div>
   <ul>
-    <li *ngFor="let entry of historyList">{{ entry }}</li>
+    <li *ngFor="let entry of historyList" class="history-entry">
+      <span class="expression">{{ entry.expression }}</span>
+      <span class="timestamp">{{ entry.timestamp }}</span>
+    </li>
   </ul>
 </div>

@@ -1,10 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button } from '../button/button';
 import { History } from '../../services/history.service';
 import { DoubleDigitPipe } from '../../pipes/double-digit-pipe';
 import { Calculator } from '../../services/calculator.service';
 import { CalculatorApiService } from '../../services/calculator-api.service';
+import { 
+  HistoryEntry, 
+  OperationType, 
+  OperationSymbols 
+} from '../../models/calculation.model';
 
 @Component({
   selector: 'app-calculator',
@@ -14,14 +19,19 @@ import { CalculatorApiService } from '../../services/calculator-api.service';
   styleUrl: './calculator.scss',
   providers: [History]
 })
-export class CalculatorComponent {
-  historyList: string[] = [];
+export class CalculatorComponent implements OnInit {
+  historyList: HistoryEntry[] = [];
 
   constructor(
     private history: History,
     private calculator: Calculator,
     private calculatorApi: CalculatorApiService
   ) {}
+
+  ngOnInit() {
+    // Sayfa yüklendiğinde API'den history'yi çek
+    this.loadHistory();
+  }
 
   // Getter'lar view için
   get currentInput(): string {
@@ -73,8 +83,8 @@ export class CalculatorComponent {
           next: (response) => {
             this.calculator.clear();
             this.calculator.addDigit(response.result.toString());
-            this.history.add(`√${a} = ${response.result}`);
-            this.historyList = this.history.get();
+            // API'den history'yi yeniden yükle
+            this.loadHistory();
           },
           error: (error) => {
             console.error('Karekök hesaplanırken hata:', error);
@@ -111,8 +121,8 @@ export class CalculatorComponent {
         // Fallback to local calculation
         this.calculator.calculateResult();
         const result = this.calculator.getCurrentInput();
-        this.history.add(expression + result);
-        this.historyList = this.history.get();
+        // API'den history'yi yeniden yükle (local ekleme yapmıyoruz)
+        this.loadHistory();
         return;
     }
 
@@ -123,17 +133,16 @@ export class CalculatorComponent {
         this.calculator.clear();
         this.calculator.addDigit(response.result.toString());
         
-        // History'e ekle
-        this.history.add(expression + response.result);
-        this.historyList = this.history.get();
+        // API'den history'yi yeniden yükle
+        this.loadHistory();
       },
       error: (error) => {
         console.error('API çağrısında hata:', error);
         // Hata durumunda lokal hesaplama yap
         this.calculator.calculateResult();
         const result = this.calculator.getCurrentInput();
-        this.history.add(expression + result);
-        this.historyList = this.history.get();
+        // API'den history'yi yeniden yükle
+        this.loadHistory();
       }
     });
   }
@@ -143,9 +152,28 @@ export class CalculatorComponent {
     this.calculatorApi.getHistory().subscribe({
       next: (history) => {
         // API'den gelen history'yi local history'ye dönüştür
-        this.historyList = history.map(item => 
-          `${item.operation} = ${item.result}`
-        );
+        this.historyList = history.map(item => {
+          let expression = '';
+          
+          // Operation type'ı enum'a dönüştür ve sembol al
+          const operationType = item.operation as OperationType;
+          
+          if (operationType === OperationType.SQUARE_ROOT) {
+            expression = `${OperationSymbols[OperationType.SQUARE_ROOT]}${item.parameter1} = ${item.result}`;
+          } else {
+            const symbol = OperationSymbols[operationType] || '?';
+            expression = `${item.parameter1} ${symbol} ${item.parameter2} = ${item.result}`;
+          }
+          
+          return {
+            expression: expression,
+            timestamp: new Date(item.date).toLocaleTimeString('tr-TR', { 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit' 
+            })
+          };
+        });
       },
       error: (error) => {
         console.error('History yüklenirken hata:', error);
@@ -158,11 +186,18 @@ export class CalculatorComponent {
       next: () => {
         this.historyList = [];
         console.log('API history temizlendi');
+        // API'den güncel history'yi yeniden yükle
+        this.loadHistory();
       },
       error: (error) => {
         console.error('History temizlenirken hata:', error);
       }
     });
+  }
+
+  clearHistory() {
+    // Sadece API history'yi temizle
+    this.clearApiHistory();
   }
 }
 

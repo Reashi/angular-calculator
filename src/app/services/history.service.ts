@@ -1,19 +1,35 @@
 import { Injectable } from '@angular/core';
+import { HistoryEntry } from '../models/calculation.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class History {
-  private history: string[] = [];
+  private history: HistoryEntry[] = [];
 
     add(entry: string) {
-      this.history.unshift(entry); // en üste ekle
+      const now = new Date();
+      const timestamp = now.toLocaleTimeString('tr-TR', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      });
+      
+      this.history.unshift({ 
+        expression: entry, 
+        timestamp: timestamp 
+      }); // en üste ekle
+      
       if (this.history.length > 5) {
         this.history.pop(); // en eskiyi sil
       }
     }
 
-    get() {
+    get(): HistoryEntry[] {
       return this.history;
+    }
+
+    clear() {
+      this.history = [];
     }
 } 

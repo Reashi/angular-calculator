@@ -74,11 +74,49 @@
     0 4px 6px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   
-  h3 {
-    color: #2d3748;
-    font-size: 1.1rem;
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
+    
+    h3 {
+      color: #2d3748;
+      font-size: 1.1rem;
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+  
+  .clear-history-btn {
+    background: linear-gradient(145deg, #fed7d7, #feb2b2);
+    color: #c53030;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 
+      0 2px 4px rgba(197, 48, 48, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    
+    &:hover {
+      background: linear-gradient(145deg, #fc8181, #f56565);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 
+        0 4px 8px rgba(197, 48, 48, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 
+        0 2px 4px rgba(197, 48, 48, 0.2),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
   }
   
   ul {
@@ -111,6 +149,26 @@
     
     &:last-child {
       border-bottom: none;
+    }
+  }
+  
+  .history-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .expression {
+      flex: 1;
+      color: #2d3748;
+      font-weight: 500;
+    }
+    
+    .timestamp {
+      color: #718096;
+      font-size: 0.75rem;
+      font-weight: 400;
+      margin-left: 1rem;
+      flex-shrink: 0;
     }
   }
 }
