@@ -9,8 +9,7 @@ Modern, Angular tabanlı hesap makinesi uygulaması. REST API entegrasyonu ve ge
 - **Çıkarma** (-)
 - **Çarpma** (*)
 - **Bölme** (/)
-- **Üs alma** (^)
-- **Karekök** (√)
+
 
 ### 🔗 API Entegrasyonu
 - REST API üzerinden gerçek hesaplamalar
